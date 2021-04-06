@@ -131,12 +131,14 @@ function App() {
   }
 
   /**
-   * 
+   * Calculates the coins to give back to user.
+   * Uses greedy algorithm. 
    * @param {float} payment 
    * @param {float} price 
    * @returns Array of coins to be given back to customer
    */
   function calculateChange(payment, price) {
+  //If the payment is 0 return 0, (a bug would make this return 0.01 when input was blank)
   if (payment == 0){
     return [0]
   }
@@ -170,19 +172,10 @@ function App() {
     else {
       current-=1
     }
-  
-
   }
-
-
-
   var coinsTocurrency = coinsToGive.map(coin => coin/100)
   setcoinsgiven(coinsTocurrency)
 
-  }
-  var displayChange =  () => {
-    var change = calculateChange(10,calculatePrice()).map(coin => coin)
-  
   }
   return (
     <div>
@@ -230,14 +223,16 @@ function App() {
           }
         })
         
+        
         var inputMoney = checkedBoxes.reduce((total, num) => total + num,0).toFixed(2)
         var inputMoney = parseFloat(inputMoney)
         if (inputMoney < price){
           alert("Not enough")
+          setPayment(0)
         }
         else {
           setPayment(parseFloat(inputMoney))
-          setcoinsgiven([0])
+          
 
         }
         
@@ -247,7 +242,7 @@ function App() {
       <h2>Paid: £{payment.toFixed(2)}</h2>
       
       <h1>Change</h1>
-      {coinsgiven.reduce( (total,num) => total+num, 0)}
+      {coinsgiven.reduce( (total,num) => total+num, 0).toFixed(2)}
       <br />
       <h1>Coins Given:{coinsgiven.map(coin => <Coin coin={coin} />)}</h1>
 
