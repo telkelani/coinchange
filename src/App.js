@@ -11,6 +11,9 @@ function App() {
   useEffect(() => {
     parseInputDate("00:00")
     parseOutputDate("00:01")
+    const inputTimeHTML = document.getElementById("inputTime")
+    const outputTimeHTML = document.getElementById("outputTime")
+    const calculatePriceButton = document.getElementById("current-price")
 
   },[])
 
@@ -114,7 +117,83 @@ function App() {
     return Number(totalPrice).toFixed(2)
   }
 
+  /**
+   * 
+   * @param {float} payment 
+   * @param {float} price 
+   * @returns Array of coins to be given back to customer
+   */
+  function calculateChange(payment, price) {
+    
+    /* Initialize variables*/
 
+    //Convert money into pennies (so I don't have to deal with floating points)
+    payment*=100
+    price*=100 
+    const coins = [1,2,5,10,20,50,100,200,500,1000,2000]
+
+
+    var currentCoinIndex = 0 //The current coin selected from the coin bag
+    var change = payment - price //The change to be given
+
+    /* Now have to give the right coins to represent change */
+
+    var coinsToGive = [] //The coins to give back to the customer
+
+    //Calculates first coin to give back
+    //This is done outside while loop to prevent O(n**2) complexity
+    //Searches from the biggest coin/note and stops the loop when it finds suitable coin
+    //E.g. if change is 585 then the loop will stop when the current coin is 500.
+    //Updates the change and adds that coin to be given at the end
+    for (let i = coins.length-1; i>=0; i--){
+      if (change - coins[i] >= 0){
+        change-=coins[i]
+        currentCoinIndex = i
+        break
+      }
+    }
+    coinsToGive.push(coins[currentCoinIndex])
+
+    //This is for the remaining change
+
+
+
+    //If the change comes out to 0 the loop will stop
+
+    while (change > 0){
+
+      //It will check whether the current coin can be subtracted to make 0
+      //e.g. if change is 5 and the current coin is 5 then add 5 to the list
+      if (change - coins[currentCoinIndex] == 0){
+        change-=coins[currentCoinIndex]
+        coinsToGive.push(coins[currentCoinIndex])
+      }
+
+      //If not, it will try the previous coin, and see if the result is positive
+      //If it is positive then this coin is added to the coins to give back
+      if (change -  coins[currentCoinIndex - 1] >= 0){
+        change-=coins[currentCoinIndex - 1]
+        currentCoinIndex = currentCoinIndex - 1
+        coinsToGive.push(coins[currentCoinIndex])
+      }
+
+      //If the current coin, nor the previous coin subtract from change to get >0 or ==0
+      //Then the current coin Index shifts one step left. 
+      else {
+        currentCoinIndex-=1
+      }
+    }
+
+
+
+    //Money was represented in pennies, so must divide each coin by 100
+    var penniesToPounds = coinsToGive.map(coin => coin/100)
+    
+    return penniesToPounds
+
+
+  }
+  console.log(calculateChange(5,3.11))
   return (
     <div>
       <h1>Time In</h1>
@@ -126,21 +205,24 @@ function App() {
       <br />
       <br />
 
-      <button type="submit" onClick={
+      <button id="calculate-price" type="submit" onClick={
         () => 
         {
-          var inputTime = document.getElementById("inputTime").value
-          var outputTime = document.getElementById("outputTime").value
+
           parseInputDate(inputTime)
           parseOutputDate(outputTime)
           
         }
       }>Calculate Price</button>
 
+      <h1>Payment</h1>
+      <input type="number" id="payment"></input>
+
       <h1>Receipt</h1>
       
       <h2>Price <strong>£{calculatePrice()}</strong></h2>
 
+      
 
     </div>
   );
