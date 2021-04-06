@@ -1,3 +1,4 @@
+import { CircularProgress } from '@material-ui/core'
 import React, { useEffect, useState} from 'react'
 
 import {Coin} from './Coin'
@@ -10,11 +11,13 @@ function App() {
   const [payment, setPayment] = useState(0)
   const [price, setPrice] = useState(0)
   const [coinsgiven, setcoinsgiven] = useState([])
+  const coins = [1,2,5,10,20,50,100,500,1000,2000]
   useEffect(() => {
     parseInputDate("00:00")
     parseOutputDate("00:00")
-    const paymentInput = document.getElementById("payment").value
-    setPayment(paymentInput)
+    // const paymentInput = document.getElementById("1p").value
+    // setPayment(paymentInput)
+    
   },[])
 
   useEffect( () => {
@@ -38,6 +41,7 @@ function App() {
     toDate.setHours(hrs)
     toDate.setMinutes(mins)
     setInputTime(toDate)
+    
   }
 
   /**
@@ -136,7 +140,7 @@ function App() {
   if (payment == 0){
     return [0]
   }
-  var coins = [1,2,5,10,20,50,100,500,1000,2000]
+
   var current = 0
   payment*=100
   price*=100  
@@ -183,10 +187,10 @@ function App() {
   return (
     <div>
       <h1>Time In</h1>
-      <input id="inputTime" type="text" />  
+      <input id="inputTime" type="time" />  
       
       <h1>Time Out</h1>
-      <input id="outputTime" type="text" />
+      <input id="outputTime" type="time" />
 
       <br />
       <br />
@@ -196,7 +200,7 @@ function App() {
         {
           var inputTime = document.getElementById("inputTime").value
           var outputTime = document.getElementById("outputTime").value
-          parseInputDate(inputTime)
+          var validInput = parseInputDate(inputTime)
           parseOutputDate(outputTime)
           
           
@@ -206,16 +210,46 @@ function App() {
       <h1>Receipt</h1>
       <h2>Price <strong>£{price.toFixed(2)}</strong></h2>
       <h2>Payment</h2>
-      <input id="payment" type="number"></input>
-      <button onClick={() => {
-        var p = document.getElementById("payment").value
-        setPayment(p)
-        console.log(payment)
+
+      {coins.map(coin => {
+      var id = coin+"p"
+      return (
+      <div>
+        <input type="checkbox" name="mycheckboxes" id={id} />
+        <label for={id}>£{(coin / 100).toFixed(2)}</label>
+      </div>)})}
+      
+
+      <button onClick={() => { 
+        var checkboxes = Array.from(document.getElementsByName("mycheckboxes"))
+        var labels = document.getElementsByTagName("label")
+        var checkedBoxes = []
+        checkboxes.map( (box, index) => {
+          if (box.checked && box){
+            checkedBoxes.push(parseFloat(labels[index].textContent.slice(1,)))
+          }
+        })
+        
+        var inputMoney = checkedBoxes.reduce((total, num) => total + num,0).toFixed(2)
+        var inputMoney = parseFloat(inputMoney)
+        if (inputMoney < price){
+          alert("Not enough")
+        }
+        else {
+          setPayment(parseFloat(inputMoney))
+          setcoinsgiven([0])
+
+        }
         
         
         }}>Pay</button>
+      <br />
+      <h2>Paid: £{payment.toFixed(2)}</h2>
+      
       <h1>Change</h1>
-      {coinsgiven.map(coin => <Coin coin={coin} />)}
+      {coinsgiven.reduce( (total,num) => total+num, 0)}
+      <br />
+      <h1>Coins Given:{coinsgiven.map(coin => <Coin coin={coin} />)}</h1>
 
     </div>
   );
