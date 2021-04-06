@@ -1,22 +1,30 @@
 import React, { useEffect, useState} from 'react'
 
-
+import {Coin} from './Coin'
 
 
 function App() {
   //They are initialized to today as the date is not important here 
   const [inputTime, setInputTime] = useState(new Date())
   const [outputTime, setOutputTime] = useState(new Date())
-
+  const [payment, setPayment] = useState(0)
+  const [price, setPrice] = useState(0)
+  const [coinsgiven, setcoinsgiven] = useState([])
   useEffect(() => {
     parseInputDate("00:00")
     parseOutputDate("00:01")
-    const inputTimeHTML = document.getElementById("inputTime")
-    const outputTimeHTML = document.getElementById("outputTime")
-    const calculatePriceButton = document.getElementById("current-price")
-
+    const paymentInput = document.getElementById("payment").value
+    setPayment(paymentInput)
   },[])
 
+  useEffect( () => {
+    calculatePrice()
+  }, [inputTime, outputTime])
+
+  useEffect( () => {
+    calculateChange(payment,price)
+
+  },[payment])
   /**
    * Converts user input time into a valid date
    * Sets state of inputTime
@@ -114,7 +122,8 @@ function App() {
     totalPrice+=(hrsToMins+diffInMins)*0.01
 
     //Displays output in 2 decimal places
-    return Number(totalPrice).toFixed(2)
+    totalPrice = parseFloat(Number(totalPrice).toFixed(2))
+    setPrice(totalPrice)
   }
 
   /**
@@ -189,11 +198,14 @@ function App() {
     //Money was represented in pennies, so must divide each coin by 100
     var penniesToPounds = coinsToGive.map(coin => coin/100)
     
-    return penniesToPounds
-
+    setcoinsgiven(penniesToPounds)
+    console.log(coinsgiven)
 
   }
-  console.log(calculateChange(5,3.11))
+  var displayChange =  () => {
+    var change = calculateChange(10,calculatePrice()).map(coin => coin)
+  
+  }
   return (
     <div>
       <h1>Time In</h1>
@@ -205,24 +217,31 @@ function App() {
       <br />
       <br />
 
-      <button id="calculate-price" type="submit" onClick={
+      <button type="submit" onClick={
         () => 
         {
-
+          var inputTime = document.getElementById("inputTime").value
+          var outputTime = document.getElementById("outputTime").value
           parseInputDate(inputTime)
           parseOutputDate(outputTime)
+          
           
         }
       }>Calculate Price</button>
 
-      <h1>Payment</h1>
-      <input type="number" id="payment"></input>
-
       <h1>Receipt</h1>
+      <h2>Price <strong>£{price}</strong></h2>
+      <h2>Payment</h2>
+      <input id="payment" type="number"></input>
+      <button onClick={() => {
+        var p = document.getElementById("payment").value
+        setPayment(p)
+        console.log(payment)
+        
+        
+        }}>Pay</button>
       
-      <h2>Price <strong>£{calculatePrice()}</strong></h2>
-
-      
+      {coinsgiven.map(coin => <Coin coin={coin} />)}
 
     </div>
   );
