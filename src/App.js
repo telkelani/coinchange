@@ -12,24 +12,15 @@ function App() {
   const [inputTime, setInputTime] = useState(new Date())
   const [outputTime, setOutputTime] = useState(new Date())
 
-  //State variables that get updated by user and on render
+  //State variables that get updated by user
   const [payment, setPayment] = useState(0)
   const [price, setPrice] = useState(0)
   const [coinsGiven, setcoinsGiven] = useState([])
 
-  //coins in pennies so calculation doesn't deal with floating points
+  //Coins in pennies so calculation minimizes floating points
   //e.g.  £20 = 2000 pennies 
-  //0 is at the beginning so when input is empty, £0.01 isn't given for no reason
+  //0 is at the beginning so when input is empty, 1p isn't given for no reason
   const coins = [0,1,2,5,10,20,50,100,500,1000,2000]
-
-  //When page loads, set the dates as the same so the default price is £3
-  useEffect(() => {
-    // parseInputDate("00:00")
-    // parseOutputDate("00:00")
-    
-    
-    
-  },[])
 
   //Whenever each of the times change, recalculate the price
   useEffect( () => {
@@ -54,6 +45,7 @@ function App() {
     var colon = time.indexOf(":") //Split string into hrs and mins separately 
     var hrs = time.slice(0,colon)
     var mins = time.slice(colon+1,)
+    //Set the hours and minutes from input into a real datetime object
     toDate.setHours(hrs)
     toDate.setMinutes(mins)
     setInputTime(toDate)
@@ -70,6 +62,7 @@ function App() {
     var colon = time.indexOf(":") //Split string into hrs and mins separately 
     var hrs = time.slice(0,colon)
     var mins = time.slice(colon+1,)
+    //Set the hours and minutes from input into a real datetime object
     toDate.setHours(hrs)
     toDate.setMinutes(mins)
     setOutputTime(toDate)
@@ -88,7 +81,6 @@ function App() {
     
     //Calculate difference in minutes
     var diffInMins = outputTime.getMinutes() - inputTime.getMinutes()
-    // var diffInMins = subtractMins;
 
     /**
      * If output time has less minutes than input time, then the hours decremented by one
@@ -109,7 +101,7 @@ function App() {
 
   /**
    * Calculates the parking fare
-   * Sets the price state variable to the calculate price
+   * Sets the price state variable to calculate price
    */
   function calculatePrice(){
 
@@ -134,21 +126,23 @@ function App() {
 
     //If there is no hour difference
     //difference in minutes is also 0 so £3 is charged for the first hour
+    
     //e.g. if someone stayed for 10mins they would still have to pay £3
     if (diffInHrs == 0){
+      //If diffInMins were not 0 here it would charge 1p per min which is not correct
       diffInMins = 0
     }
     //Total price is the initial hour + all the extra minutes * 1p
     totalPrice+=(hrsToMins+diffInMins)*0.01
-
+    //Sets price state
     setPrice(totalPrice)
   }
 
   /**
    * Calculates the coins to give back to user.
    * Uses greedy algorithm. 
-   * @param {float} payment 
-   * @param {float} price 
+   * @param {float} payment - How much user paid
+   * @param {float} price  - The price of the fare
    * @returns Array of coins/notes to be given back to customer
    */
   function calculateChange(payment, price) {
@@ -165,6 +159,9 @@ function App() {
 
   //Initial change calculation: finds the biggest possible coin that can be given
   //Stops the loop once its found
+  //Calculates new change
+  //parseInt because sometimes JS returns float when subtracting integers
+  //Sets the current coin index to where it stopped the loop
   for (let i = coins.length-1; i>=0; i--){
     if (change - coins[i] >= 0){
     change-=coins[i]
@@ -210,7 +207,7 @@ function App() {
 
   }
 
-  //Container CSS
+  //Container CSS (bootstrap containers are easier to be overridden by internal CSS)
   const containerStyles = 
   {
     padding: 0,
@@ -265,9 +262,9 @@ function App() {
       <Row className="change">
         <Col className="text-center" md={5}>
           <h1>Payment</h1>
-          
+          {/* Instead of writing 10 number inputs, return them in a map */}
           {coins.slice(1,).map(coin => {
-            var id = coin+"p"
+            var id = coin+"p" //ID is the coin + p as coins are in pennies
             return (
               <div className="coinSelect">
               <input className="coinQuantity" 
@@ -332,87 +329,6 @@ function App() {
         </Col>
       </Row>
     </Container>
-    // <div>
-    //   <h1>Time In</h1>
-    //   <input id="inputTime" type="time" />  
-      
-    //   <h1>Time Out</h1>
-    //   <input id="outputTime" type="time" />
-
-    //   <br />
-    //   <br />
-
-    //   <button type="submit" onClick={
-    //     () => 
-    //     {
-    //       //Gets user input and parses dates
-    //       var inputTime = document.getElementById("inputTime").value
-    //       var outputTime = document.getElementById("outputTime").value
-    //       parseInputDate(inputTime)
-    //       parseOutputDate(outputTime)
-          
-          
-    //     }
-    //   }>Calculate Price</button>
-
-    //   <h1>Receipt</h1>
-    //   <h2>Price <strong>£{price.toFixed(2)}</strong></h2>
-    //   <h2>Payment</h2>
-
-    //   {/* Display options, this is better than allowing user to type amount
-    //     * E.g. user has to select the coins they want to use. 
-    //     */}
-    //   {coins.slice(1,).map(coin => {
-    //   var id = coin+"p"
-    //   return (
-    //   <div>
-    //     <input type="number" min="0" defaultValue="0" name="quantities" id={id} />
-    //     <label for={id}>£{(coin / 100).toFixed(2)}</label>
-    //   </div>)})}
-      
-
-    //   <button onClick={() => { 
-    //     var inputs = Array.from(document.getElementsByName("quantities"))
-        
-    //     var labels = document.getElementsByTagName("label")
-    //     var money = []
-    //     for (let i = 0; i < inputs.length; i++){
-    //       var coinDisplayed = labels[i].textContent.slice(1,)
-          
-    //       money.push(inputs[i].value*coinDisplayed)
-    //     }
-        
-    //     var inputMoney = money.reduce((total, num) => total + num,0).toFixed(2)
-    //     var inputMoney = parseFloat(inputMoney)
-    //     if (inputMoney < price){
-    //       alert("Not enough")
-        
-    //     }
-    //     else {
-    //       setPayment(parseFloat(inputMoney))
-
-    //     }
-        
-        
-    //     }}>Pay</button>
-
-    //   <button type="submit" onClick={() => 
-    //   {
-    //     var inputs = Array.from(document.getElementsByName("quantities"))
-    //     inputs.forEach((input) => {
-    //       input.value = 0
-    //     })
-
-    //   }}>Reset</button>
-    //   <br />
-    //   <h2>Paid: £{payment.toFixed(2)}</h2>
-      
-    //   <h1>Change</h1>
-    //   {coinsGiven.reduce( (total,num) => total+num, 0).toFixed(2)}
-    //   <br />
-    //   <h1>Coins Given:{coinsGiven.map(coin => <CoinComponent coin={coin} />)}</h1>
-
-    // </div>
   );
 }
 
