@@ -158,13 +158,14 @@ function App() {
     }
   }
   coinsToGive.push(coins[current])
-
+  console.log(change)
   while (change > 0){
+    console.log("change", change, "current", coins[current], change - coins[current])
     if (change - coins[current] >= 0){
       change-=coins[current]
       coinsToGive.push(coins[current])
     }
-    if (change -  coins[current - 1] >= 0){
+    else if (change -  coins[current - 1] >= 0){
       change-=coins[current - 1]
       current = current - 1
       coinsToGive.push(coins[current])
@@ -228,7 +229,7 @@ function App() {
         var inputMoney = parseFloat(inputMoney)
         if (inputMoney < price){
           alert("Not enough")
-          setPayment(0)
+        
         }
         else {
           setPayment(parseFloat(inputMoney))
