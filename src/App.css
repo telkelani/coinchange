@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Kiwi+Maru&display=swap');
+
+.welcome {
+  font-family: 'Kiwi Maru', serif;
+  font-weight: 800;
+  color:rgb(148, 144, 156)
+}
+
+.description{
+  font-family: 'Kiwi Maru', serif;
+
+}
+.time-inputbox{
+  border-radius: 23px 23px 23px 23px;
+  opacity: 0.75;
+  background: cornflowerblue;
+  border-color:cornflowerblue;
+  width: 8em;
+  text-align: center
+}
+
+.time{
+  background: rgb(185, 211, 145);
+  opacity: 0.85;
+  font-family: 'Kiwi Maru', serif;
+}
+
+.change {
+  font-family: 'Kiwi Maru', serif;
+  margin-top: 4vh;
+  padding-bottom: 10vh;
+  background:rgb(236, 150, 144)
+}
+
+.coinSelect {
+  display: flex;
+  justify-content: space-around;
+
+}
+
+.coinQuantity {
+  border-radius: 10px 10px 10px 10px;
+  border-color: rgb(211, 195, 185);
+  background: rgb(211, 195, 185);
+}
+
+.action-buttons {
+  display: flex;
+  margin-right: 25vh;
+  margin-left: 5vh;
+  flex-flow: row wrap;
+  justify-content: space-between
+}
+
+.change-text{
+  color: rgb(48, 194, 48)
+}
+
+.paid-text{
+  margin-right: 140px
+}

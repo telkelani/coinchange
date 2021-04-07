@@ -1,6 +1,6 @@
 import React from 'react'
 
-
-export function Coin({coin}){
-    return (<p>{coin}</p>)
+//Functional component to display the coins 
+export function CoinComponent({coin}){
+    return (<p>£{coin.toFixed(2)}</p>)
 }
