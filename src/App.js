@@ -23,8 +23,10 @@ function App() {
   const coins = [0,1,2,5,10,20,50,100,500,1000,2000]
 
   //Whenever each of the times change, recalculate the price
+  //Also reset the payment
   useEffect( () => {
     calculatePrice()
+    resetQuantities()
   }, [inputTime, outputTime])
 
   //Whenever the price or payment changes, recalculate the change  
@@ -207,6 +209,17 @@ function App() {
 
   }
 
+  //Resets all money input quantities to 0
+  const resetQuantities = () => 
+  {
+
+    var inputs = Array.from(document.getElementsByName("quantities"))
+    inputs.forEach((input) => {
+      input.value = 0
+      setPayment(0)
+  })
+
+}
   //Container CSS (bootstrap containers are easier to be overridden by internal CSS)
   const containerStyles = 
   {
@@ -276,40 +289,32 @@ function App() {
           
             <Button onClick={() => { 
               // Gets amount paid by multiplying quantities with labels
-              var inputs = Array.from(document.getElementsByName("quantities"))
+              var quantityInputs = Array.from(document.getElementsByName("quantities"))
               
-              var labels = document.getElementsByTagName("label")
-              var money = []
-              for (let i = 0; i < inputs.length; i++){
-                var coinDisplayed = labels[i].textContent.slice(1,)
+              var quantityLabels = document.getElementsByTagName("label")
+              var moneyPaid = []
+              for (let i = 0; i < quantityInputs.length; i++){
+                var coinDisplayed = quantityLabels[i].textContent.slice(1,)
                 
-                money.push(inputs[i].value*coinDisplayed)
+                moneyPaid.push(quantityInputs[i].value*coinDisplayed)
               }
               //This adds the total of each coin selected
-              var inputMoney = money.reduce((total, num) => total + num,0).toFixed(2)
-              var inputMoney = parseFloat(inputMoney)
+              var totalMoneyPaid = moneyPaid.reduce((total, num) => total + num,0).toFixed(2)
+              var totalMoneyPaid = parseFloat(totalMoneyPaid)
               
               //If user did not put enough money, then they will be alerted
-              if (inputMoney < price){
+              if (totalMoneyPaid < price){
                 alert("Not enough")
+                
               }
               else {
-                setPayment(parseFloat(inputMoney))
+                setPayment(parseFloat(totalMoneyPaid))
 
               }
             }}>Pay</Button>
 
             {/* Resets quantities */}
-            <Button variant="danger" type="submit" onClick={() => 
-              {
-
-                var inputs = Array.from(document.getElementsByName("quantities"))
-                inputs.forEach((input) => {
-                  input.value = 0
-                  setPayment(0)
-              })
-
-            }}>Reset</Button>
+            <Button variant="danger" type="submit" onClick={() => resetQuantities()}>Reset</Button>
           </div>
           <div>
             <h2 className="paid-text">Paid: £{payment.toFixed(2)}</h2>
